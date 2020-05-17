@@ -2,6 +2,7 @@ package sg.edu.np.WhackAMole;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.RestrictionEntry;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
+    final int[] count = {0};
 
     /* Hint
         - The function setNewMole() uses the Random class to generate a random value ranged from 0 to 2.
@@ -27,9 +30,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Log.v(TAG, "Finished Pre-Initialisation!");
-
 
     }
     @Override
@@ -52,26 +53,96 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void doCheck(Button checkButton) {
-        /* Checks for hit or miss and if user qualify for advanced page.
-            Triggers nextLevelQuery().
-         */
+        TextView score = (TextView)findViewById(R.id.score);
+        if(checkButton.getText() == "*"){
+            Log.v(TAG, "Hit, score added!");
+            ++count[0];
+        }
+        else{
+            Log.v(TAG, "Missed, point deducted!");
+            --count[0];
+        }
+        score.setText(String.valueOf(count[0]));
+        if (count[0]%10 == 0){
+            nextLevelQuery();
+        }
+        setNewMole();
     }
 
     private void nextLevelQuery(){
-        /*
-        Builds dialog box here.
-        Log.v(TAG, "User accepts!");
-        Log.v(TAG, "User decline!");
-        Log.v(TAG, "Advance option given to user!");
-        belongs here*/
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Warning! Insane Whack-a-Mole Incoming!")
+                .setMessage("Would you like to continue?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.v(TAG, "User accepts!");
+                        nextLevel();
+                        Log.v(TAG, "Advance option given to user!");
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.v(TAG, "User decline!");
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void nextLevel(){
         /* Launch advanced page */
+        TextView score = (TextView)findViewById(R.id.score);
+        Intent in = new Intent(MainActivity.this, Main2Activity.class);
+        in.putExtra("Score", String.valueOf(score));
+        startActivity(in);
     }
 
     private void setNewMole() {
         Random ran = new Random();
         int randomLocation = ran.nextInt(3);
+        Button left = (Button)findViewById(R.id.left);
+        Button center = (Button)findViewById(R.id.center);
+        Button right = (Button)findViewById(R.id.right);
+
+        if(randomLocation == 0){
+            left.setText("*");
+            center.setText("O");
+            right.setText("O");
+
+        }
+        else if(randomLocation == 1){
+            left.setText("O");
+            center.setText("*");
+            right.setText("O");
+        }
+        else{
+            left.setText("O");
+            center.setText("O");
+            right.setText("*");
+        }
+
+    }
+
+    public void click(View v) {
+        Button b = (Button)v;
+        switch(b.getId()){
+            case R.id.left:
+                Log.v(TAG, "Left Button Clicked!");
+                doCheck(b);
+                break;
+
+            case R.id.center:
+                Log.v(TAG, "Middle Button Clicked!");
+                doCheck(b);
+                break;
+
+            case R.id.right:
+                Log.v(TAG, "Right Button Clicked!");
+                doCheck(b);
+                break;
+        }
+
     }
 }
