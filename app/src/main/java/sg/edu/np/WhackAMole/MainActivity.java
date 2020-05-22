@@ -16,6 +16,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     final int[] count = {0};
+    final int[] check = {0};
 
     /* Hint
         - The function setNewMole() uses the Random class to generate a random value ranged from 0 to 2.
@@ -54,16 +55,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void doCheck(Button checkButton) {
         TextView score = (TextView)findViewById(R.id.score);
-        if(checkButton.getText() == "*"){
+        if(checkButton.getText().equals("*")){
             Log.v(TAG, "Hit, score added!");
             ++count[0];
+            ++check[0];
         }
         else{
             Log.v(TAG, "Missed, point deducted!");
             --count[0];
         }
         score.setText(String.valueOf(count[0]));
-        if (count[0]%10 == 0){
+        if (check[0]%10 == 0 && check[0]>0){
             nextLevelQuery();
         }
         setNewMole();
@@ -93,9 +95,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void nextLevel(){
         /* Launch advanced page */
-        TextView score = (TextView)findViewById(R.id.score);
         Intent in = new Intent(MainActivity.this, Main2Activity.class);
-        in.putExtra("Score", String.valueOf(score));
+        in.putExtra("Score", count[0]);
         startActivity(in);
     }
 

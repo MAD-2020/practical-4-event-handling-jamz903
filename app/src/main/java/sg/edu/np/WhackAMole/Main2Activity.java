@@ -16,7 +16,7 @@ public class Main2Activity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     CountDownTimer cdt;
     CountDownTimer icd;
-    final int[] advancedCount = {10};
+    final int[] advancedCount = {0};
     /* Hint
         - The function setNewMole() uses the Random class to generate a random value ranged from 0 to 8.
         - The function doCheck() takes in button selected and computes a hit or miss and adjust the score accordingly.
@@ -98,6 +98,8 @@ public class Main2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
         TextView advancedScore = (TextView)findViewById(R.id.advancedScore);
+        Intent receivingEnd = getIntent();
+        advancedCount[0] = receivingEnd.getIntExtra("Score", 0);
         Log.v(TAG, "Current User Score: " + advancedScore);
         setNewMole();
         readyTimer();
